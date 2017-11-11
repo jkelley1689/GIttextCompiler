@@ -11,6 +11,7 @@
                         | <heading> <inner-text>
                         | <bold> <inner-text>
                         | <listitem> <inner-text>
+                        | <image> <inner-text>
                         | <link> <inner-text>
                         | TEXT <inner-text>
                         | empty
