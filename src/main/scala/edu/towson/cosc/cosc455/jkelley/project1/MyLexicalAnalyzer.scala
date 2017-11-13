@@ -31,7 +31,7 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
     else if(checkForText())
       processText()
     else {
-      println("Error, unknown character")
+      println("System Exit, Lexical Error: " + c + " unknown character")
       System.exit(1)
     }
 
@@ -71,7 +71,7 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
   {
     addChar()
     getChar()
-    while (!checkForKeyword() && !CONSTANTS.whiteSpace.contains(c.toString)) {
+    while (!checkForKeyword() && !CONSTANTS.whiteSpace.contains(c.toString) && c.toString != ".") {
       addChar()
       getChar()
     }
@@ -86,7 +86,7 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
       lexeme.clear()
     }
     else {
-      println("Error, not a valid token")
+      println("System Exit, Lexical Error: " + lexeme.mkString("") +  " is not a valid token")
       System.exit(1)
     }
   }

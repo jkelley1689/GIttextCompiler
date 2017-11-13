@@ -12,7 +12,7 @@ object Compiler {
   def main(args: Array[String]): Unit = {
 
     checkFile(args)
-    readFile(args(1))
+    readFile(args(0))
     Scanner.getNextToken()
     Parser.gittex()
     SemanticAnalyzer.print()
@@ -21,7 +21,7 @@ object Compiler {
   }
 
   def readFile(file : String) = {
-    val source = scala.io.Source.fromFile("Test1.txt")
+    val source = scala.io.Source.fromFile(file)
     fileContents = try source.mkString finally source.close()
   }
 
@@ -30,7 +30,7 @@ object Compiler {
       println("USAGE ERROR: wrong number of args fool!")
       System.exit(1)
     }
-    else if (! args(0).endsWith(".mkd")) {
+    else if (! args(0).endsWith(".gtx")) {
       println("USAGE ERROR: wrong extension fool!")
       System.exit(1)
     }

@@ -20,6 +20,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     variableDefine()
     body()
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCE))
+      parser += Compiler.currentToken
       println("Done")
   }
 
@@ -27,13 +28,17 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     skipWhiteSpace()
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARB))
       addToParser()
-    else return
+    else return//{
+      //println("Error, \\PARB expected")
+      //System.exit(1)
+    //}
     variableDefine()
     innerText()
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARE))
       addToParser()
     else{
       println("Error, \\PARE expected")
+      System.exit(1)
     }
 
 
@@ -100,14 +105,34 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     else return
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
+    else{
+      println("Error, text expected")
+      System.exit(1)
+      }
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE))
       addToParser()
+    else{
+      println("Error, ] expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken == "(")
       addToParser()
+    else{
+      println("Error, ( expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
+    else{
+      println("Error, text expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken == ")")
       addToParser()
+    else{
+      println("Error, ) expected")
+      System.exit(1)
+    }
   }
 
   override def italics(): Unit = ???
@@ -115,7 +140,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
   override def body(): Unit = {
     if(!innerText().isInstanceOf[Unit])
       body()
-    paragraph()
+    else paragraph()
     while(!Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCE))
       body()
 
@@ -129,12 +154,16 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     else return
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
-    else
+    else {
       println("Error, text expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BOLD))
       addToParser()
-    else
+    else {
       println("Error, * expected")
+      System.exit(1)
+    }
 
   }
 
@@ -163,6 +192,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       addToParser()
     else{
       println("Error, ] expected")
+      System.exit(1)
     }
   }
 
@@ -176,12 +206,15 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       addToParser()
     else{
       println("Error, text expected")
+      System.exit(1)
     }
 
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE))
       addToParser()
-    else
+    else {
       println("Error, ] expected")
+      System.exit(1)
+    }
 
     variableDefine()
 
@@ -196,14 +229,35 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     else return
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
+    else{
+      println("Error, text expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE))
       addToParser()
+    else{
+      println("Error, ] expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken == "(")
       addToParser()
+    else{
+      println("Error, ( expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
+    else
+      {
+        println("Error, text expected")
+        System.exit(1)
+      }
     if(Compiler.currentToken == ")")
       addToParser()
+    else{
+      println("Error, ) expected")
+      System.exit(1)
+    }
   }
 
   override def variableUse(): Unit = {
@@ -213,15 +267,19 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       addToParser()
     else{
       println("Error, \\USE expected")
+      System.exit(1)
     }
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
-    else
+    else {
       println("Error, text expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE))
       addToParser()
     else{
       println("Error, ] expected")
+      System.exit(1)
     }
   }
 
@@ -242,7 +300,9 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
   }
 
   def skipWhiteSpace(): Unit = {
-    while(Compiler.currentToken == "\t" || Compiler.currentToken == "\n" || Compiler.currentToken == "\\")
+    //while(Compiler.currentToken == "\t" || Compiler.currentToken == "\n" || Compiler.currentToken == "\\")
+      //Compiler.Scanner.getNextToken()
+    while(CONSTANTS.whiteSpace.contains(Compiler.currentToken))
       Compiler.Scanner.getNextToken()
   }
 

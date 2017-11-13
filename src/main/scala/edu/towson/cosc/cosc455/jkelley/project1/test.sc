@@ -21,7 +21,8 @@ doSomething().isInstanceOf[Unit]
 
 var parser = ListBuffer[String]("hello","world","and","its","people")
 
-println(parser)
+val parseTree = parser.toList
+println(parseTree.head)
 
 
 
