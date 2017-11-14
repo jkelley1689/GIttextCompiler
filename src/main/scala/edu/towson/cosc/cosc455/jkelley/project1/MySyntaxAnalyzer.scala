@@ -208,7 +208,18 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       println("Error, text expected")
       System.exit(1)
     }
-
+    if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.EQUAL))
+      addToParser()
+    else{
+      println("Error, = expected")
+      System.exit(1)
+    }
+    if(Compiler.currentToken.isInstanceOf[String])
+      addToParser()
+    else{
+      println("Error, text expected")
+      System.exit(1)
+    }
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BRACKETE))
       addToParser()
     else {
@@ -270,7 +281,13 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       System.exit(1)
     }
     if(Compiler.currentToken.isInstanceOf[String])
-      addToParser()
+      if(lookUpVar())
+          addToParser()
+      else{
+        println("Static semantic error: variable " + Compiler.currentToken.mkString("") + " was not defined")
+        System.exit(1)
+      }
+
     else {
       println("Error, text expected")
       System.exit(1)
@@ -281,6 +298,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       println("Error, ] expected")
       System.exit(1)
     }
+
   }
 
   override def heading(): Unit = {
@@ -312,5 +330,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
   }
 
   def checkForKeyword() : Boolean = CONSTANTS.keywords.contains(Compiler.currentToken)
+
+  def lookUpVar() : Boolean = parser.contains(Compiler.currentToken + " ")
 
 }

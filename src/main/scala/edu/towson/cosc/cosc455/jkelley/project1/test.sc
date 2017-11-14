@@ -24,6 +24,23 @@ var parser = ListBuffer[String]("hello","world","and","its","people")
 val parseTree = parser.toList
 println(parseTree.head)
 
+var HTML = ListBuffer[String]()
+
+def convertToHtml(parseTree : List[String]) : ListBuffer[String] ={
+  parseTree.head match{
+    case "hello" => HTML += "<HTML>"
+      convertToHtml(parseTree.tail)
+    case "world" => HTML += "<title>"
+      convertToHtml(parseTree.tail)
+    case "people" => HTML += "<parb>"
+      convertToHtml(parseTree.tail)
+    case "and" => HTML += "<pare>"
+  }
+}
+
+convertToHtml(parseTree)
+
+
 
 
 

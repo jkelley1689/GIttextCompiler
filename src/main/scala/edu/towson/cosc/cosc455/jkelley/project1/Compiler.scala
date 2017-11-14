@@ -1,4 +1,6 @@
 package edu.towson.cosc.cosc455.jkelley.project1
+import java.awt.Desktop
+import java.io.{File, IOException}
 
 object Compiler {
 
@@ -15,7 +17,9 @@ object Compiler {
     readFile(args(0))
     Scanner.getNextToken()
     Parser.gittex()
-    SemanticAnalyzer.print()
+    SemanticAnalyzer.convertToHtml(SemanticAnalyzer.parseTree.toList)
+    //SemanticAnalyzer.print()
+    //openHTMLFileInBrowser()
 
 
   }
@@ -33,6 +37,21 @@ object Compiler {
     else if (! args(0).endsWith(".gtx")) {
       println("USAGE ERROR: wrong extension fool!")
       System.exit(1)
+    }
+  }
+
+  def openHTMLFileInBrowser(htmlFileStr : String) = {
+    val file : File = new File(htmlFileStr.trim)
+    println(file.getAbsolutePath)
+    if (!file.exists())
+      sys.error("File " + htmlFileStr + " does not exist.")
+
+    try {
+      Desktop.getDesktop.browse(file.toURI)
+    }
+    catch {
+      case ioe: IOException => sys.error("Failed to open file:  " + htmlFileStr)
+      case e: Exception => sys.error("He's dead, Jim!")
     }
   }
 }

@@ -17,9 +17,10 @@ object CONSTANTS {
   val VARUSE : String = "\\USE["
   val PARAS : String = "("
   val PARAE : String = ")"
+  val EQUAL : String = "="
 
-  val keywords : List[String] = List(DOCB, DOCE, TITLEB, BRACKETE, PARB, PARE, BOLD, LIST, NEWLINE, LINKS, IMAGES, HASH, VARDEF, VARUSE,PARAS,PARAE,"\\")
-  val keyStart : List[Char] = List('\\','*','+','[','!','#','\n',']','(',')')
+  val keywords : List[String] = List(DOCB, DOCE, TITLEB, BRACKETE, PARB, PARE, BOLD, LIST, NEWLINE, LINKS, IMAGES, HASH, VARDEF, VARUSE,PARAS,PARAE,EQUAL,"\\")
+  val keyStart : List[Char] = List('\\','*','+','[','!','#','\n',']','(',')','=')
 
   val letters : List[String] = List("a","b","c","d","e","f","g","h","i","j","k","l","m",
     "n","o","p","q","r","s","t","u","v","w","x","y","z")
