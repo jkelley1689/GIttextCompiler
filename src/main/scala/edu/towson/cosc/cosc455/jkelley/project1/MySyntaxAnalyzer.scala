@@ -1,11 +1,14 @@
 package edu.towson.cosc.cosc455.jkelley.project1
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{HashMap, ListBuffer}
 
 class MySyntaxAnalyzer extends SyntaxAnalyzer{
 
 
   var parser = ListBuffer[String]()
+  var varDefinitions = HashMap[String,String]()
+  var tempVar = " "
+  var tempDec = " "
 
 
   override def gittex(): Unit = {
@@ -21,17 +24,17 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     body()
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCE))
       parser += Compiler.currentToken
-      println("Done")
+
   }
 
   override def paragraph(): Unit = {
     skipWhiteSpace()
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARB))
       addToParser()
-    else return//{
-      //println("Error, \\PARB expected")
-      //System.exit(1)
-    //}
+    else return{
+      println("Error, \\PARB expected")
+      System.exit(1)
+    }
     variableDefine()
     innerText()
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARE))
@@ -67,31 +70,16 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
 
   override def innerText(): Unit = {
     skipWhiteSpace()
-    if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.VARUSE)){
+    if(CONSTANTS.innerText.exists(x => x.equalsIgnoreCase(Compiler.currentToken))){
       variableUse()
-      innerText()
-    }
-    else if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.HASH)){
       heading()
-      innerText()
-    }
-    else if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.BOLD)){
       bold()
-      innerText()
-    }
-    else if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.LIST)){
       listItem()
-      innerText()
-    }
-    else if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.IMAGES)){
       image()
-      innerText()
-    }
-    else if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.LINKS)){
       link()
       innerText()
     }
-    else if(!checkForKeyword() && Compiler.currentToken.isInstanceOf[String]) {
+    else if(!checkForKeyword() && Compiler.currentToken.isInstanceOf[String]){
       addToParser()
       innerText()
     }
@@ -137,13 +125,17 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
 
   override def italics(): Unit = ???
 
-  override def body(): Unit = {
-    if(!innerText().isInstanceOf[Unit])
+  override def body(): Unit = { //i need help with this
+    if(CONSTANTS.innerText.exists(x => x.equalsIgnoreCase(Compiler.currentToken))){
+      innerText()
       body()
-    else paragraph()
-    while(!Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCE))
+    }
+    else if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARB))
+      paragraph()
+    while(!Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCE)) {
+      Compiler.Scanner.getNextToken()
       body()
-
+    }
   }
 
   override def bold(): Unit = {
@@ -202,8 +194,10 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.VARDEF))
       addToParser()
     else return
-    if(Compiler.currentToken.isInstanceOf[String])
+    if(Compiler.currentToken.isInstanceOf[String]) {
+      tempVar = Compiler.currentToken     //sets the currentToken to the variable that will be the key for the HashMap
       addToParser()
+    }
     else{
       println("Error, text expected")
       System.exit(1)
@@ -214,8 +208,10 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       println("Error, = expected")
       System.exit(1)
     }
-    if(Compiler.currentToken.isInstanceOf[String])
+    if(Compiler.currentToken.isInstanceOf[String]) {
+      tempDec = Compiler.currentToken  //sets the currentToken to the variable that will be the value for the above key
       addToParser()
+    }
     else{
       println("Error, text expected")
       System.exit(1)
@@ -227,6 +223,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
       System.exit(1)
     }
 
+    addVarDef(tempVar,tempDec) //maps the definition to its variable
     variableDefine()
 
 
@@ -276,12 +273,9 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
 
     if(Compiler.currentToken.equalsIgnoreCase(CONSTANTS.VARUSE))
       addToParser()
-    else{
-      println("Error, \\USE expected")
-      System.exit(1)
-    }
+    else return
     if(Compiler.currentToken.isInstanceOf[String])
-      if(lookUpVar())
+      if(!lookUpVar().equals("Error"))
           addToParser()
       else{
         println("Static semantic error: variable " + Compiler.currentToken.mkString("") + " was not defined")
@@ -300,15 +294,21 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     }
 
   }
-
+  //function creates a heading and
   override def heading(): Unit = {
     if (Compiler.currentToken.contains(CONSTANTS.HASH))
       addToParser()
     else return
     if(Compiler.currentToken.isInstanceOf[String])
       addToParser()
+    else{
+      println("Error, text expected")
+      System.exit(1)
+    }
   }
-
+  //recursive function for list items
+  //add to a list and goes into innerItem() until the currentToken does
+  //not match List, returns to innerText()
   override def listItem(): Unit = {
     if(Compiler.currentToken.contains(CONSTANTS.LIST))
       addToParser()
@@ -317,13 +317,12 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
     listItem()
   }
 
+  //function to skip white space
   def skipWhiteSpace(): Unit = {
-    //while(Compiler.currentToken == "\t" || Compiler.currentToken == "\n" || Compiler.currentToken == "\\")
-      //Compiler.Scanner.getNextToken()
     while(CONSTANTS.whiteSpace.contains(Compiler.currentToken))
       Compiler.Scanner.getNextToken()
   }
-
+  //function to add the token to the parser once its passes the grammer rules
   def addToParser() : Unit = {
     parser += Compiler.currentToken
     Compiler.Scanner.getNextToken()
@@ -331,6 +330,12 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer{
 
   def checkForKeyword() : Boolean = CONSTANTS.keywords.contains(Compiler.currentToken)
 
-  def lookUpVar() : Boolean = parser.contains(Compiler.currentToken + " ")
+  //function to check if a variable has been previously defined
+  //takes in the current token as the hashmap key and checks if the key exists
+  //if not "error" is returned
+  def lookUpVar() : String = varDefinitions.getOrElseUpdate(Compiler.currentToken + " " ,"Error")
+
+  //function that add variables and their definitions to the hashmap
+  def addVarDef(holdVar : String, holdDec : String) : Unit = varDefinitions += (tempVar -> tempDec)
 
 }

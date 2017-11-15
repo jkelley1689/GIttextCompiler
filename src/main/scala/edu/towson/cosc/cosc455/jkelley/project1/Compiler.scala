@@ -6,6 +6,7 @@ object Compiler {
 
   var currentToken : String = " "
   var fileContents : String = " "
+  var fileName : String = " "
 
   val Scanner = new MyLexicalAnalyzer
   val Parser = new MySyntaxAnalyzer
@@ -15,11 +16,11 @@ object Compiler {
 
     checkFile(args)
     readFile(args(0))
+    fileName = mkFileName(args(0))
     Scanner.getNextToken()
     Parser.gittex()
-    SemanticAnalyzer.convertToHtml(SemanticAnalyzer.parseTree.toList)
-    //SemanticAnalyzer.print()
-    //openHTMLFileInBrowser()
+    SemanticAnalyzer.convert
+
 
 
   }
@@ -40,19 +41,9 @@ object Compiler {
     }
   }
 
-  def openHTMLFileInBrowser(htmlFileStr : String) = {
-    val file : File = new File(htmlFileStr.trim)
-    println(file.getAbsolutePath)
-    if (!file.exists())
-      sys.error("File " + htmlFileStr + " does not exist.")
-
-    try {
-      Desktop.getDesktop.browse(file.toURI)
-    }
-    catch {
-      case ioe: IOException => sys.error("Failed to open file:  " + htmlFileStr)
-      case e: Exception => sys.error("He's dead, Jim!")
-    }
+  //changes the file ext from .gtx to .html
+  def mkFileName(fullPath : String): String = {
+    fullPath.split('.').init ++ Seq("html") mkString "."
   }
 }
 

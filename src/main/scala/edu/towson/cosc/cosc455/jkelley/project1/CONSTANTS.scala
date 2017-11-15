@@ -30,4 +30,6 @@ object CONSTANTS {
   val whiteSpace : List[String] = List(" ", "\t", "\n", "\b","\f","\r","\\")
   val validText : List[String] = whiteSpace ::: letters ::: numbersEtc ::: upperCase
 
+  val innerText : List[String] = List(HASH,BOLD,LINKS,LIST,IMAGES,VARUSE)
+
 }

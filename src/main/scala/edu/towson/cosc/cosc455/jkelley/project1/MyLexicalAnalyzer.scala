@@ -13,11 +13,7 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
   }
 
   //looks up the token to see if it is a valid keyword
-  override def lookup(s : String): Boolean = {
-    CONSTANTS.keywords.contains(s)
-  }
-
-
+  override def lookup(s : String): Boolean = CONSTANTS.keywords.exists(x => x.equalsIgnoreCase(s))
 
 //This function searches for the first non-blank ' ' char in the string
   //Once it finds a char, it checks if the char is the beginning of a keyword
@@ -34,9 +30,6 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
       println("System Exit, Lexical Error: " + c + " unknown character")
       System.exit(1)
     }
-
-
-
   }
 
   //retrieves the current character in the string and pushes the index to the next character in the string
